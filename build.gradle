@@ -1,20 +1,17 @@
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
-apply plugin: 'com.jfrog.bintray'
 
 group = 'com.uberall.plugins'
-version = '1.0.0'
+version = '1.0.2'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-def bintrayUser, bintrayKey
-
-if(!project.hasProperty('bintrayUser')) {
-    bintrayUser = 'test'
-}
-if(!project.hasProperty('bintrayKey')) {
-    bintrayKey = 'empty'
-}
+// if(!project.hasProperty('bintrayUser')) {
+//     bintrayUser = 'test'
+// }
+// if(!project.hasProperty('bintrayKey')) {
+//     bintrayKey = 'empty'
+// }
 
 buildscript {
     repositories {
@@ -22,7 +19,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5"
+        
     }
 }
 
@@ -57,7 +54,7 @@ dependencies {
 publishing {
     publications {
         maven(MavenPublication) {
-            artifactId 'autoprefixer-asset-pipeline'
+            artifactId 'add'
             pom.withXml {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
@@ -93,24 +90,27 @@ publishing {
             artifact javadocJar
         }
     }
+    // repositories {
+    //     maven {
+    //         // change to point to your repo, e.g. http://my.org/repo
+    //         url "https://github.com/uberall/uberall-plugins/raw/mvn-repo/"
+    //     }
+    // }
+}
+// servers {
+//     server {
+//         id 'github'
+//         username gitHubUsername
+//         password gitHubPassword
+//     }
+// }
+
+uploadArchives {
     repositories {
-        maven {
-            // change to point to your repo, e.g. http://my.org/repo
-            url "https://github.com/uberall/uberall-plugins/raw/mvn-repo/"
+        mavenDeployer {
+            repository(url: "file:///Users/philipp/Workspace/uberall-plugins")
         }
     }
-}
-
-bintray {
-    user = bintrayUser
-    key = bintrayKey
-    publications = ['maven']
-    // pkg {
-    //     repo = 'asset-pipeline'
-    //     userOrg = 'uberall'
-    //     name = 'autoprefixer-asset-pipeline'
-    //     licenses = ['Apache-2.0']
-    // }
 }
 
 
@@ -137,4 +137,4 @@ test {
 }
 
 
-bintrayUpload.dependsOn build, sourcesJar, javadocJar
+uploadArchives.dependsOn build, sourcesJar, javadocJar

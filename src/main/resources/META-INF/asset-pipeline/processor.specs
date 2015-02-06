@@ -1,1 +1,1 @@
-asset.pipeline.prefix.AutoprefixerProcessor=asset.pipeline.CssAssetFile,asset.pipeline.less.LessAssetFile
+asset.pipeline.autoprefixer.AutoprefixerProcessor=asset.pipeline.CssAssetFile,asset.pipeline.less.LessAssetFile

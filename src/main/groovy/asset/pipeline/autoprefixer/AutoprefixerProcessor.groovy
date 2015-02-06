@@ -19,9 +19,9 @@ class AutoprefixerProcessor extends AbstractProcessor {
         super(precompiler)
         classLoader = this.class.classLoader
 
-        def shellJsResource = classLoader.getResource('asset/pipeline/js/shell.js')
-        def autoprefixerJsResource = classLoader.getResource('asset/pipeline/js/autoprefixer.js')
-        def envRhinoJsResource = classLoader.getResource('asset/pipeline/js/env.rhino.js')
+        def shellJsResource = classLoader.getResource('asset/pipeline/autoprefixer/shell.js')
+        def autoprefixerJsResource = classLoader.getResource('asset/pipeline/autoprefixer/autoprefixer.js')
+        def envRhinoJsResource = classLoader.getResource('asset/pipeline/autoprefixer/env.rhino.js')
         Context cx = Context.enter()
 
         cx.setOptimizationLevel(-1)
