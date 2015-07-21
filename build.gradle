@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
 group = 'com.uberall.plugins'
-version = '1.0.2'
+version = '1.0.3'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 // if(!project.hasProperty('bintrayUser')) {

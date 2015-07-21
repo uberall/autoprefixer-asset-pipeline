@@ -3,6 +3,7 @@ package asset.pipeline.autoprefixer
 import asset.pipeline.AbstractProcessor
 import asset.pipeline.AssetCompiler
 import asset.pipeline.AssetFile
+import asset.pipeline.AssetPipelineConfigHolder
 import groovy.util.logging.Log4j
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.Scriptable
@@ -13,6 +14,7 @@ class AutoprefixerProcessor extends AbstractProcessor {
     public static final ThreadLocal threadLocal = new ThreadLocal();
     Scriptable globalScope
     ClassLoader classLoader
+    boolean enabled = true
     def browsers
 
     AutoprefixerProcessor(AssetCompiler precompiler) {
@@ -29,25 +31,32 @@ class AutoprefixerProcessor extends AbstractProcessor {
         cx.evaluateString(globalScope, shellJsResource.getText('UTF-8'), shellJsResource.file, 1, null)
         cx.evaluateString(globalScope, envRhinoJsResource.getText('UTF-8'), envRhinoJsResource.file, 1, null)
         cx.evaluateString(globalScope, autoprefixerJsResource.getText('UTF-8'), autoprefixerJsResource.file, 1, null)
-        log.info("initilized")
+        if (AssetPipelineConfigHolder.config?.autoprefix == false) {
+            enabled = false
+            log.info "disabling autoprefixer"
+        }
     }
 
     String process(String input, AssetFile assetFile) {
-        log.info("prefixing $assetFile.name")
-        try {
-            threadLocal.set(assetFile);
+        if (enabled) {
+            log.info("prefixing $assetFile.name")
+            try {
+                threadLocal.set(assetFile);
 
-            def cx = Context.enter()
-            def compileScope = cx.newObject(globalScope)
-            compileScope.setParentScope(globalScope)
-            compileScope.put("lessSrc", compileScope, input)
-            compileScope.put("browserArray", compileScope, browsers)
-            def result = cx.evaluateString(compileScope, "autoprefixer.process(lessSrc).css", "autoprefix command", 0, null)
-            return result.toString()
-        } catch (Exception e) {
-            throw new Exception("Autoprefixing failed: $e")
-        } finally {
-            Context.exit()
+                def cx = Context.enter()
+                def compileScope = cx.newObject(globalScope)
+                compileScope.setParentScope(globalScope)
+                compileScope.put("lessSrc", compileScope, input)
+                compileScope.put("browserArray", compileScope, browsers)
+                def result = cx.evaluateString(compileScope, "autoprefixer.process(lessSrc).css", "autoprefix command", 0, null)
+                return result.toString()
+            } catch (Exception e) {
+                throw new Exception("Autoprefixing failed: $e")
+            } finally {
+                Context.exit()
+            }
+        } else {
+            return input
         }
     }
 
